@@ -4,16 +4,31 @@ import asyncio
 import json
 import os
 
-# Загружаем конфиг
-with open("config.json", "r", encoding="utf-8") as f:
+CONFIG_FILE = "config.json"
+
+# Завантажуємо конфіг
+with open(CONFIG_FILE, "r", encoding="utf-8") as f:
     config = json.load(f)
 
 api_id = config["api_id"]
 api_hash = config["api_hash"]
-session_string = config["session_string"]
+session_string = config.get("session_string")  # None
 group_id = config["group_id"]
 
-client = TelegramClient(StringSession(session_string), api_id, api_hash)
+
+if not session_string:
+    with TelegramClient(StringSession(), api_id, api_hash) as client:
+        print("Введіть код підтвердження з Telegram...")
+        client.start()
+        session_string = client.session.save()
+
+        config["session_string"] = session_string
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+        print("Session string збережено до config.json")
+else:
+    client = TelegramClient(StringSession(session_string), api_id, api_hash)
+
 
 # Путь к логам
 LOG_PATH = "log_sent.json"
