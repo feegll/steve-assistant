@@ -52,6 +52,7 @@ async def handler(event):
         return
 
     fio = lines[0].strip()
+    first_name = fio.split()[1] if len(fio.split()) >= 2 else fio
     birth_date = lines[1].strip()
     phone = lines[2].strip()
     start_date = lines[3].strip()
@@ -63,7 +64,7 @@ async def handler(event):
         return
 
     message = (
-        f"Привет, меня зовут Steave, я ассистент администратора!\n"
+        f"Привет {first_name}! Меня зовут Стив, я ассистент администратора!\n"
         f"HR менеджер передал мне твои контакты и сказал, что тебя заинтересовала наша вакансия 'менеджер чата'.\n"
         f"Как указано, ты хотел бы приступить к обучению {start_date}, верно?"
     )
