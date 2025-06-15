@@ -18,14 +18,20 @@ def register_handlers(client, group_id):
         if phone in log:
             return
 
-        reply = build_reply(context)
+        decision = decide_action(context)
+        action = decision["action"]
+        reply = decision["reply"]
 
         try:
-            if context.get("username") and context["username"].startswith("@"):
+            if action == "message" and context.get("username"):
                 await client.send_message(context["username"], reply)
-            else:
+            elif action == "message_by_phone":
                 entity = await client.get_input_entity(phone)
                 await client.send_message(entity, reply)
+            else:
+                print("Ожидание или неполные данные. Ответ не отправлен.")
+                return
+
 
             log[phone] = True
             save_log(log)
