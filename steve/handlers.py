@@ -37,3 +37,17 @@ def register_handlers(client, group_id):
             save_log(log)
         except Exception as e:
             print(f"[Ошибка отправки]: {e}")
+
+@client.on(events.NewMessage(incoming=True))
+async def on_response(event):
+    sender = await event.get_sender()
+    message_text = event.raw_text.lower().strip()
+
+    # Простой фильтр: реагируем только на личные ответы (не группы)
+    if event.is_private:
+        # Простейшая логика — ответ содержит согласие
+        if message_text in ["да", "+", "конечно", "согласен", "верно", "готов"]:
+            await event.reply("Супер! Для знакомства давай проведем небольшой созвон, чтобы я мог немного рассказать тебе о работе.\nПодскажи, пожалуйста, актуальный ли у тебя номер телефона — если всё верно, я наберу тебя в течение минуты. Мой номер будет начинаться на +1.")
+        else:
+            await event.reply("Спасибо за ответ! Можешь уточнить, ты готов к короткому звонку или предпочитаешь пока переписку?")
+            
